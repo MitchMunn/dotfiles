@@ -1,0 +1,48 @@
+{
+    "diffEditor.hideUnchangedRegions.enabled": true,
+
+    // Vim Settings
+    "vim.handleKeys": {
+		"<C-s>": false,
+		"<C-z>": false,
+        "<C-p>": false,
+        "<C-t>": false,
+        "<C-w>": false,
+        "<C-b>": false,
+        "<C-g>": false,
+        "<C-w>h": false,
+        "<C-w>l": false,
+        "<C-w>j": false,
+        "<C-w>k": false,
+        "<C-c>": false,
+        "<C-\\>": false,
+        "<C-`>": false,
+        "<C-n>": false,
+        "<v-v>": false
+    },
+    "vim.textwidth": 80,
+    "vim.useSystemClipboard": true,
+    "editor.lineNumbers": "relative",
+
+    // Python Settings
+    "python.analysis.autoImportCompletions": true,
+    "python.terminal.activateEnvInCurrentTerminal": true,
+    "python.terminal.activateEnvironment": true,
+    "[python]": {
+        "diffEditor.ignoreTrimWhitespace": false,
+        "editor.formatOnType": true
+    },
+
+    "remote.autoForwardPortsSource": "hybrid",
+    "svelte.enable-ts-plugin": true,
+
+    // Zen Mode
+    "zenMode.fullScreen": true,
+
+    // Pinned Tabs
+    "workbench.editor.enablePreview": false,
+    "workbench.editor.limit.enabled": true,
+    "workbench.editor.limit.value": 1,
+    "workbench.editor.closeOnFileDelete": true,
+    "workbench.editor.preventPinnedEditorClose": "never"
+}
