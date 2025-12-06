@@ -1,0 +1,174 @@
+#!/bin/bash
+# If not running interactively, don't do anything
+case $- in
+    *i*) ;;
+      *) return;;
+esac
+
+# don't put duplicate lines or lines starting with space in the history.
+# See bash(1) for more options
+HISTCONTROL=ignoreboth
+
+# append to the history file, don't overwrite it
+shopt -s histappend
+
+# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
+HISTSIZE=5000
+HISTFILESIZE=10000
+
+# check the window size after each command and, if necessary,
+# update the values of LINES and COLUMNS.
+shopt -s checkwinsize
+
+# If set, the pattern "**" used in a pathname expansion context will
+# match all files and zero or more directories and subdirectories.
+# example: **/*.py will recuresively list all Python files.
+shopt -s globstar
+
+
+# make less more friendly for non-text input files, see lesspipe(1)
+[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+
+# set variable identifying the chroot you work in (used in the prompt below)
+if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
+    debian_chroot=$(cat /etc/debian_chroot)
+fi
+
+case "$TERM" in
+xterm*|rxvt*)
+    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
+    ;;
+*)
+    ;;
+esac
+
+# enable color support of ls and also add handy aliases
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    alias ls='ls --color=auto'
+    alias grep='grep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
+
+    # Alias completions for ls aliases
+    complete -F _ls ls ll la l
+fi
+
+# Alias definitions in ~/.bash_aliases file
+if [ -f ~/.bash_aliases ]; then
+    . ~/.bash_aliases
+else
+    echo "Consider creating ~/.bash_aliases to store your aliases."
+fi
+
+# Exports in ~/.bash_exports file
+if [ -f ~/.bash_exports ]; then
+    . ~/.bash_exports
+else
+    echo "Consider creating ~/.bash_exports to store your exports."
+fi
+
+# enable programmable completion features (tab completion)
+if ! shopt -oq posix; then
+  if [ -f /usr/share/bash-completion/bash_completion ]; then
+    . /usr/share/bash-completion/bash_completion
+  elif [ -f /etc/bash_completion ]; then
+    . /etc/bash_completion
+  fi
+fi
+
+# Fuzzy directory navigation
+if command -v fzf >/dev/null; then
+    alias cdf='cd $(find ~ -type d -not -path "*/\.*" | fzf --height 40% --reverse)'
+else
+    echo "fzf not found. Install it with 'sudo apt install fzf' to enable fuzzy directory navigation."
+fi
+
+# Enhanced history search
+if command -v fzf >/dev/null; then
+  __fzf_history__() {
+    # make sure current session history is on disk and new history entries are loaded
+    history -a 2>/dev/null || true
+    history -n 2>/dev/null || true
+
+    # produce most-recent-first, deduped history (keep the newest occurrence)
+    # `history` prints oldest->newest, so `tac` reverses it to newest->oldest
+    # awk '!seen[$0]++' keeps the first (newest) occurrence of each command
+    local selected_command
+    selected_command=$(
+      history \
+        | sed -E 's/^\s*[0-9]+\s*//' \
+        | tac \
+        | awk '!seen[$0]++' \
+        | fzf --height=40% --reverse --no-sort --prompt='history> '
+    )
+
+    if [[ -n "$selected_command" ]]; then
+      READLINE_LINE=$selected_command
+      READLINE_POINT=${#READLINE_LINE}
+    fi
+  }
+
+  # Bind Ctrl-R to our fzf history search function
+  bind -x '"\C-r": __fzf_history__'
+
+else
+  echo "fzf not found. Install it to enable enhanced history search."
+  echo "For Debian/Ubuntu: sudo apt install fzf"
+  echo "For macOS (with Homebrew): brew install fzf"
+fi
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+set_prompt() {
+    local exit_code=$?
+    local status_icon=""
+    [[ $exit_code -ne 0 ]] && status_icon="❌ "
+
+    # Abbreviate $HOME to ~
+    local dir="${PWD/#$HOME/~}"
+
+    # Truncate long paths (e.g., …/last/segment)
+    local max_len=40
+    if (( ${#dir} > max_len )); then
+        dir="…${dir: -$max_len}"
+    fi
+
+    # Git branch & status
+    local branch=""
+    local git_dirty=""
+    if git rev-parse --is-inside-work-tree &>/dev/null; then
+        branch=$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse --short HEAD 2>/dev/null)
+        git diff --quiet && git diff --cached --quiet
+        [[ $? -ne 0 ]] && git_dirty="🔴" || git_dirty="🟢"
+    fi
+
+    # Python virtualenv (optional)
+    local venv=""
+    [[ -n "$VIRTUAL_ENV" ]] && venv="($(basename "$VIRTUAL_ENV")) "
+
+    # Terminal window title (xterm-compatible only)
+    local title=""
+    case "$TERM" in
+        xterm*|rxvt*|tmux|alacritty|foot*)
+        title="\[\e]0;\u@\h: $dir\a\]"
+        ;;
+    esac
+
+    # Choose prompt symbol
+    local symbol='$'
+    [[ $EUID -eq 0 ]] && symbol='#'
+
+    # Final prompt
+    PS1="${title}${venv}${status_icon}\[\e[38;5;48;1m\]\u@\H\[\e[0m\] 📁 \[\e[38;5;33;1m\]$dir\[\e[0m\] \[\e[96;1m\]${branch:+$git_dirty $branch}\[\e[0m\] ${symbol} "
+}
+PROMPT_COMMAND=set_prompt
+
+
+# source .cpprc if SOURCE_CPPRC is not set to 0
+if [[ "$SOURCE_CPPRC" != 0 && -f "/home/mmunn/.cpprc" ]]; then source "/home/mmunn/.cpprc"; fi
+
+# cpp
+if [[ "$SOURCE_CPPRC" != 0 && -f "/home/mmunn/.cpprc" ]]; then source "/home/mmunn/.cpprc"; fi
