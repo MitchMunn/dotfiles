@@ -1,0 +1,30 @@
+// ~/.config/zellij/config.kdl
+theme "catppuccin-mocha"
+
+plugins {
+    tab-bar path="tab-bar"
+    status-bar path="status-bar"
+    strider path="strider"
+    compact-bar path="compact-bar"
+}
+
+scrollback:
+  lines: 10000
+
+on_force_close "quit"
+
+default_shell "bash"
+
+env {
+    // This is the magic line — makes zellij launch bash as a login+interactive shell
+    // so it sources your full .bashrc (including starship, aliases, etc.)
+    SHELL "/bin/bash"
+}
+
+shell "/bin/bash" "--login" "-i"
+
+keybinds {
+    normal {
+        bind "Ctrl s" { SwitchToMode "session"; }
+    }
+}
