@@ -172,3 +172,7 @@ if [[ "$SOURCE_CPPRC" != 0 && -f "/home/mmunn/.cpprc" ]]; then source "/home/mmu
 
 # cpp
 if [[ "$SOURCE_CPPRC" != 0 && -f "/home/mmunn/.cpprc" ]]; then source "/home/mmunn/.cpprc"; fi
+
+
+# zoxide
+eval "$(zoxide init bash)"
