@@ -166,13 +166,5 @@ set_prompt() {
 }
 PROMPT_COMMAND=set_prompt
 
-
-# source .cpprc if SOURCE_CPPRC is not set to 0
-if [[ "$SOURCE_CPPRC" != 0 && -f "/home/mmunn/.cpprc" ]]; then source "/home/mmunn/.cpprc"; fi
-
-# cpp
-if [[ "$SOURCE_CPPRC" != 0 && -f "/home/mmunn/.cpprc" ]]; then source "/home/mmunn/.cpprc"; fi
-
-
-# zoxide
+eval "$(starship init bash)"
 eval "$(zoxide init bash)"
