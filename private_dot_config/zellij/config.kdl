@@ -15,6 +15,8 @@ on_force_close "quit"
 
 default_shell "bash"
 
+mouse_mode true
+
 env {
     // This is the magic line — makes zellij launch bash as a login+interactive shell
     // so it sources your full .bashrc (including starship, aliases, etc.)
@@ -24,7 +26,4 @@ env {
 shell "/bin/bash" "--login" "-i"
 
 keybinds {
-    normal {
-        bind "Ctrl s" { SwitchToMode "session"; }
-    }
 }
