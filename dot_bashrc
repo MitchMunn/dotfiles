@@ -22,8 +22,10 @@ shopt -s checkwinsize
 
 # If set, the pattern "**" used in a pathname expansion context will
 # match all files and zero or more directories and subdirectories.
-# example: **/*.py will recuresively list all Python files.
-shopt -s globstar
+# example: **/*.py will recursively list all Python files.
+if ((BASH_VERSINFO[0] >= 4)); then
+  shopt -s globstar
+fi
 
 
 # make less more friendly for non-text input files, see lesspipe(1)

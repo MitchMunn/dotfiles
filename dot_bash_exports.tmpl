@@ -1,3 +1,8 @@
 {{ if eq .chezmoi.os "linux" }}
 export PATH="$PATH:/opt/nvim-linux-x86_64/bin"
 {{ end }}
+
+
+{{ if eq .chezmoi.os "darwin" }}
+export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
+{{ end }}
