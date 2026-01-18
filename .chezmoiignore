@@ -8,3 +8,6 @@ windows/
 {{ if ne .chezmoi.os "linux" }}
 .config/Code/
 {{ end }}
+
+# Ignore local Zellij plugins managed by Ansible
+.config/zellij/plugins/**
