@@ -13,7 +13,7 @@ plugins {
 
 {{ if and (hasKey $st "type") (eq (index $st "type") "file") }}
   zj-quit location="file:{{ $plugin }}" {
-    confirm_key "q"
+    confirm_key "Enter"
     cancel_key "Esc"
   }
 {{ end }}
