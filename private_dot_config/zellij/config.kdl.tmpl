@@ -43,4 +43,12 @@ keybinds {
     }
 {{ end }}
   }
+
+  unbind "Ctrl h"
+  shared_except "move" "locked" {
+    bind "Alt m" { SwitchToMode "Move"; }
+  }
+  move {
+    bind "Alt m" { SwitchToMode "Normal"; }
+  }
 }
